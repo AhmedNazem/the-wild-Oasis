@@ -1,30 +1,43 @@
-import { formatDistance, parseISO } from 'date-fns';
-import { differenceInDays } from 'date-fns/esm';
+import { formatDistance, parseISO, differenceInDays } from "date-fns";
 
-// We want to make this function work for both Date objects and strings (which come from Supabase)
-export const subtractDates = (dateStr1, dateStr2) =>
-  differenceInDays(parseISO(String(dateStr1)), parseISO(String(dateStr2)));
+// Your helper functions...
 
-export const formatDistanceFromNow = (dateStr) =>
-  formatDistance(parseISO(dateStr), new Date(), {
-    addSuffix: true,
-  })
-    .replace('about ', '')
-    .replace('in', 'In');
+// A utility function to calculate the difference in days between two dates.
+// Accepts both Date objects and strings, ensuring compatibility with Supabase.
+export const subtractDates = (date1, date2) => {
+  const parsedDate1 = parseISO(String(date1));
+  const parsedDate2 = parseISO(String(date2));
+  return differenceInDays(parsedDate1, parsedDate2);
+};
 
-// Supabase needs an ISO date string. However, that string will be different on every render because the MS or SEC have changed, which isn't good. So we use this trick to remove any time
-export const getToday = function (options = {}) {
+// Formats a date string as a human-readable distance from now, e.g., "2 days ago".
+// Removes "about" for cleaner formatting and adjusts phrasing for consistency.
+export const formatDistanceFromNow = (date) =>
+  formatDistance(parseISO(String(date)), new Date(), { addSuffix: true })
+    .replace("about ", "")
+    .replace("in", "In");
+
+// Returns today's date as an ISO string.
+// Can return either the start or the end of the day based on the `end` option.
+export const getToday = ({ end = false } = {}) => {
   const today = new Date();
-
-  // This is necessary to compare with created_at from Supabase, because it it not at 0.0.0.0, so we need to set the date to be END of the day when we compare it with earlier dates
-  if (options?.end)
-    // Set to the last second of the day
-    today.setUTCHours(23, 59, 59, 999);
-  else today.setUTCHours(0, 0, 0, 0);
+  if (end) {
+    today.setUTCHours(23, 59, 59, 999); // Set to the last second of the day
+  } else {
+    today.setUTCHours(0, 0, 0, 0); // Set to the first second of the day
+  }
   return today.toISOString();
 };
 
-export const formatCurrency = (value) =>
-  new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(
-    value
-  );
+// Formats a numeric value as a currency string in USD.
+export const formatCurrency = (value) => {
+  if (typeof value !== "number") {
+    throw new Error("formatCurrency expects a number as input.");
+  }
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+};
+
+export default formatCurrency;

@@ -38,6 +38,7 @@ function CabinTable() {
     queryFn: getCabins,
   });
   if (isLoading) return <Spinner />; //? might use isPending instead of isLoading
+
   return (
     <Table role="table">
       <TableHeader role="row">

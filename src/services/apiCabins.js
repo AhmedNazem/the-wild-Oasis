@@ -19,3 +19,23 @@ export async function deleteCabin(id) {
 
   return { success: true, message: "Cabin deleted successfully" };
 }
+
+export async function createCabin(newCabin) {
+  // Ensure all SMALLINT fields have valid values or defaults
+  const sanitizedCabin = {
+    ...newCabin,
+    maxCapacity: newCabin.maxCapacity || null, // Replace with a default or null if empty
+  };
+
+  const { data, error } = await supabase
+    .from("Cabins")
+    .insert([sanitizedCabin])
+    .select();
+
+  if (error) {
+    console.error("Error creating cabin:", error.message);
+    throw new Error(`Unable to create cabin: ${error.message}`);
+  }
+
+  return data;
+}

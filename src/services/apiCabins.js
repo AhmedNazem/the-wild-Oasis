@@ -64,6 +64,8 @@ export async function createEditCabin(newCabin, id) {
     imagePath = `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
 
     try {
+      //? you might need to add
+      //! if(hasImagePath)return data
       // Step 1: Upload the image to Supabase storage if image is provided
       const { error: uploadError } = await supabase.storage
         .from("cabin-images")

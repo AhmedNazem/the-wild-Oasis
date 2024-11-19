@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase, supabaseUrl } from "./supabase";
 
 export async function getCabins() {
   let { data, error } = await supabase.from("Cabins").select("*");
@@ -21,21 +21,45 @@ export async function deleteCabin(id) {
 }
 
 export async function createCabin(newCabin) {
-  // Ensure all SMALLINT fields have valid values or defaults
-  const sanitizedCabin = {
-    ...newCabin,
-    maxCapacity: newCabin.maxCapacity || null, // Replace with a default or null if empty
-  };
+  // Generate unique image name and path
+  const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
+    "/",
+    ""
+  );
+  const imagePath = `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
 
-  const { data, error } = await supabase
-    .from("Cabins")
-    .insert([sanitizedCabin])
-    .select();
+  try {
+    // Step 1: Upload the image to Supabase storage
+    const { error: uploadError } = await supabase.storage
+      .from("cabin-images")
+      .upload(imageName, newCabin.image);
 
-  if (error) {
-    console.error("Error creating cabin:", error.message);
-    throw new Error(`Unable to create cabin: ${error.message}`);
+    if (uploadError) {
+      throw new Error(`Image upload failed: ${uploadError.message}`);
+    }
+
+    // Step 2: Insert the sanitized cabin data
+    const sanitizedCabin = {
+      ...newCabin,
+      image: imagePath,
+      maxCapacity: newCabin.maxCapacity || null, // Ensure valid values
+    };
+
+    const { data, error: insertError } = await supabase
+      .from("Cabins")
+      .insert([sanitizedCabin])
+      .select();
+
+    if (insertError) {
+      // Cleanup uploaded image if data insertion fails
+      await supabase.storage.from("cabin-images").remove([imageName]);
+      throw new Error(`Cabin creation failed: ${insertError.message}`);
+    }
+
+    // Step 3: Return the created data
+    return data;
+  } catch (error) {
+    console.error("Error during cabin creation:", error.message);
+    throw error; // Propagate error to handle it upstream
   }
-
-  return data;
 }

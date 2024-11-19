@@ -37,7 +37,8 @@ function CreateCabinForm() {
   });
 
   function onSubmit(data) {
-    mutate(data);
+    console.log(data);
+    mutate({ ...data, image: data.image[0] });
   }
   function onError(errors) {
     console.error(errors);
@@ -46,6 +47,7 @@ function CreateCabinForm() {
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
+          placeHolder="Cabin name"
           disabled={isCreating}
           type="text"
           id="name"
@@ -57,6 +59,7 @@ function CreateCabinForm() {
 
       <FormRow label="Maximum capacity" error={errors?.maxCapacity?.message}>
         <Input
+          placeHolder="capacity"
           disabled={isCreating}
           type="number"
           id="maxCapacity"
@@ -72,6 +75,7 @@ function CreateCabinForm() {
 
       <FormRow label="Regular price" error={errors?.regularPrice?.message}>
         <Input
+          placeHolder="Price"
           disabled={isCreating}
           type="number"
           id="regularPrice"
@@ -109,6 +113,7 @@ function CreateCabinForm() {
         error={errors?.description?.message}
       >
         <Textarea
+          placeHolder="Description"
           type="number"
           id="description"
           defaultValue=""
@@ -119,7 +124,14 @@ function CreateCabinForm() {
       </FormRow>
 
       <FormRow label="Cabin Photo">
-        <FileInput id="image" accept="image/*" />
+        <FileInput
+          type="file"
+          id="image"
+          accept="image/*"
+          {...register("image", {
+            required: "This field is required ",
+          })}
+        />
       </FormRow>
 
       <FormRow>

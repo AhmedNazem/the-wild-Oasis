@@ -87,7 +87,13 @@ function Row({ children }) {
     </StyledRow>
   );
 }
-function Body({ children }) {}
+// eslint-disable-next-line react/prop-types
+function Body({ data, render }) {
+  // eslint-disable-next-line react/prop-types
+  if (!data.length) return <Empty>No Data to show at the moment </Empty>;
+  // eslint-disable-next-line react/prop-types
+  return <StyledBody>{data.map(render)}</StyledBody>;
+}
 // function Footer({  children }) {}
 Table.Header = Header;
 Table.Row = Row;

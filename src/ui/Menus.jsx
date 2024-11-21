@@ -1,3 +1,6 @@
+import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
 
 const StyledMenu = styled.div`
@@ -27,11 +30,9 @@ const StyledToggle = styled.button`
 
 const StyledList = styled.ul`
   position: fixed;
-
   background-color: var(--color-grey-0);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
-
   right: ${(props) => props.position.x}px;
   top: ${(props) => props.position.y}px;
 `;
@@ -60,3 +61,72 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+const MenusContext = createContext();
+// eslint-disable-next-line react/prop-types
+function Menus({ children }) {
+  const [openId, setOpenId] = useState("");
+  const close = () => setOpenId("");
+  const open = setOpenId;
+  return (
+    <MenusContext.Provider value={{ openId, close, open }}>
+      {children}
+    </MenusContext.Provider>
+  );
+}
+// eslint-disable-next-line react/prop-types
+function Toggle({ id }) {
+  const { openId, close, open } = useContext(MenusContext);
+  const toggleButtonRef = useRef(null);
+
+  function handleClick() {
+    openId === "" || openId !== id ? open(id) : close();
+  }
+
+  return (
+    <StyledToggle ref={toggleButtonRef} onClick={handleClick}>
+      <HiEllipsisVertical />
+    </StyledToggle>
+  );
+}
+// eslint-disable-next-line react/prop-types
+function List({ id, children }) {
+  const { openId } = useContext(MenusContext);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const toggleButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (toggleButtonRef.current) {
+      const { top, left, height } =
+        toggleButtonRef.current.getBoundingClientRect();
+      setPosition({ x: left, y: top + height });
+    }
+  }, [openId]);
+
+  if (openId !== id) return null;
+
+  return createPortal(
+    <StyledList position={position}>{children}</StyledList>,
+    document.body
+  );
+}
+// eslint-disable-next-line react/prop-types
+function Button({ children }) {
+  return (
+    <li>
+      <StyledButton>{children}</StyledButton>
+    </li>
+  );
+}
+
+// eslint-disable-next-line react/prop-types
+function Menu({ children }) {
+  return <StyledMenu>{children}</StyledMenu>;
+}
+
+Menus.Toggle = Toggle;
+Menus.List = List;
+Menus.Button = Button;
+Menus.Menu = Menu;
+
+export default Menus;

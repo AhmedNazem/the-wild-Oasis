@@ -1,5 +1,32 @@
 import { getToday } from "../utils/helpers";
-import supabase from "./supabase";
+import { supabase } from "./supabase";
+// export async function getBookings() {
+//   const { data, error } = await supabase
+//     .from("Bookings")
+//     .select(
+//       "id,created_at,startDate,endDate,numNights,numGuests,status,totalPrice, Cabins(name), Guests(fullName,email)"
+//     );
+//   if (error) {
+//     console.error(error);
+//     throw new Error("Bookings could not be loaded");
+//   }
+//   return data;
+// }
+//!
+export async function getBookings() {
+  const { data, error } = await supabase
+    .from("bookings") // Ensure the table name is lowercase
+    .select(
+      "id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, Cabins(name), guests(fullName,email)"
+    ); // Use lowercase `cabins` and `guests` to match your frontend expectations
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not be loaded");
+  }
+  return data;
+}
+
+//!
 
 export async function getBooking(id) {
   const { data, error } = await supabase

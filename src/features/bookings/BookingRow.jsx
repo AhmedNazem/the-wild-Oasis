@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { format, isToday } from "date-fns";
 
@@ -45,7 +46,7 @@ function BookingRow({
     totalPrice,
     status,
     guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
+    Cabins: { name: cabinName },
   },
 }) {
   const statusToTagName = {
@@ -53,7 +54,6 @@ function BookingRow({
     "checked-in": "green",
     "checked-out": "silver",
   };
-
   return (
     <Table.Row>
       <Cabin>{cabinName}</Cabin>

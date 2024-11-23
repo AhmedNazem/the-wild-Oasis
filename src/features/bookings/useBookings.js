@@ -9,6 +9,8 @@ export function useBookings() {
     !filterValue || filterValue === "all"
       ? null
       : { field: "status", value: filterValue };
+  //*👆🏼 filter 👇🏼sort
+
   const sortByRow = searchParams.get("sortBy") || "startDate-desc";
   const [field, direction] = sortByRow.split("-");
   const sortBy = { field, direction };

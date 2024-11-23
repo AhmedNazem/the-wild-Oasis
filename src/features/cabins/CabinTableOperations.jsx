@@ -15,6 +15,7 @@ function CabinTableOperations() {
           { value: "with-discount", label: "With Discount" },
         ]}
       />
+
       <Sortby
         options={[
           { value: "name-asc", label: "Sort by name (A-Z)" },

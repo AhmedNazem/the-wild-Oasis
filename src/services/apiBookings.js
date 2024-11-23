@@ -13,12 +13,17 @@ import { supabase } from "./supabase";
 //   return data;
 // }
 //!
-export async function getBookings() {
-  const { data, error } = await supabase
+export async function getBookings({ filter, sortBy }) {
+  let query = supabase
     .from("bookings") // Ensure the table name is lowercase
     .select(
       "id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, Cabins(name), guests(fullName,email)"
-    ); // Use lowercase `cabins` and `guests` to match your frontend expectations
+    );
+  //? Filter
+  if (filter !== null)
+    query = query[filter.method || "eq"](filter.field, filter.value);
+
+  const { data, error } = await query;
   if (error) {
     console.error(error);
     throw new Error("Bookings could not be loaded");

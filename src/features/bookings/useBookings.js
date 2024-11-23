@@ -27,6 +27,8 @@ export function useBookings() {
     queryKey: ["bookings", filter, sortBy, page], //? it used when we have a db getting the data from the apis
     queryFn: () => getBookings({ filter, sortBy, page }),
   });
+  const bookings = data?.data || [];
+  const count = data?.count || 0;
   //* pre fetching
   const pageCount = Math.ceil(count / PAGE_SIZE);
   if (page < pageCount)
@@ -40,8 +42,6 @@ export function useBookings() {
       queryKey: ["bookings", filter, sortBy, page - 1],
       queryFn: () => getBookings({ filter, sortBy, page: page - 1 }),
     });
-  const bookings = data?.data || [];
-  const count = data?.count || 0;
 
   return { isLoading, error, bookings, count };
 }

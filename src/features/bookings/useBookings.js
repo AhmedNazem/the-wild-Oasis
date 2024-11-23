@@ -14,13 +14,19 @@ export function useBookings() {
   const sortByRow = searchParams.get("sortBy") || "startDate-desc";
   const [field, direction] = sortByRow.split("-");
   const sortBy = { field, direction };
+  //* pagination
+  const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
+  //*
   const {
     isLoading,
-    data: bookings,
+    data, // Correct: Access data directly
     error,
   } = useQuery({
-    queryKey: ["bookings", filter, sortBy], //? it used when we have a db getting the data from the apis
-    queryFn: () => getBookings({ filter, sortBy }),
+    queryKey: ["bookings", filter, sortBy, page], //? it used when we have a db getting the data from the apis
+    queryFn: () => getBookings({ filter, sortBy, page }),
   });
-  return { isLoading, error, bookings };
+  const bookings = data?.data || [];
+  const count = data?.count || 0;
+
+  return { isLoading, error, bookings, count };
 }

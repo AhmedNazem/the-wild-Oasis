@@ -15,7 +15,7 @@ export function useBookings() {
     data: bookings,
     error,
   } = useQuery({
-    queryKey: ["bookings", filter],
+    queryKey: ["bookings", filter], //? it used when we have a db getting the data from the apis
     queryFn: () => getBookings({ filter }),
   });
   return { isLoading, error, bookings };

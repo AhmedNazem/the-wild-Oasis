@@ -9,7 +9,7 @@ export function useUpdateSetting() {
     mutationFn: updateSettingApi,
     onSuccess: () => {
       toast.success("Setting successfully edited");
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      queryClient.invalidateQueries({ queryKey: ["Settings"] });
     },
     onError: (err) => toast.error(err.message),
   });

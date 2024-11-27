@@ -1,4 +1,9 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
+import Heading from "./Heading";
+import { useNavigate } from "react-router-dom";
+import Button from "./Button";
+import { GlobalStyles } from "../styles/GlobalStyles";
 
 const StyledErrorFallback = styled.main`
   height: 100vh;
@@ -29,3 +34,22 @@ const Box = styled.div`
     color: var(--color-grey-500);
   }
 `;
+function ErrorFallback({ error, resetErrorBoundary }) {
+  const navigate = useNavigate();
+  return (
+    <>
+      <GlobalStyles />
+      <StyledErrorFallback>
+        <Box>
+          <Heading as="h1">Something went wrong 🤔 </Heading>
+          <p>{error.message}</p>
+          <Button size="large" onCLick={resetErrorBoundary}>
+            Try again :D
+          </Button>
+        </Box>
+      </StyledErrorFallback>
+    </>
+  );
+}
+
+export default ErrorFallback;

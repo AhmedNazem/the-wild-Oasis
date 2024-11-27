@@ -63,19 +63,37 @@ export async function getBooking(id) {
 }
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
+// export async function getBookingsAfterDate(date) {
+//   const { data, error } = await supabase
+//     .from("bookings")
+//     .select("created_at, totalPrice, extrasPrice")
+//     .gte("created_at", date)
+//     .lte("created_at", getToday({ end: true }));
+
+//   if (error) {
+//     console.error(error);
+//     throw new Error("Bookings could not get loaded");
+//   }
+
+//   return data;
+// }
 export async function getBookingsAfterDate(date) {
+  const endDate = getToday({ end: true });
+  console.log("Fetching bookings between:", date, "and:", endDate);
+
   const { data, error } = await supabase
     .from("bookings")
     .select("created_at, totalPrice, extrasPrice")
     .gte("created_at", date)
-    .lte("created_at", getToday({ end: true }));
+    .lte("created_at", endDate);
 
   if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+    console.error("Error fetching bookings:", error.message);
+    throw new Error("Bookings could not be loaded");
   }
 
-  return data;
+  console.log("Fetched Bookings:", data);
+  return data || [];
 }
 
 // Returns all STAYS that are were created after the given date
